@@ -22,17 +22,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci --ignore-scripts --no-audit --no-progress --prefer-offline
-      - run: npm run covtest
+      - run: npm run test
       # test typescript definitions
       - run: npm install @types/node
       - run: npx --package typescript tsc index.d.ts
-
-  finish:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Coveralls Finished
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.github_token }}
-          parallel-finished: true
