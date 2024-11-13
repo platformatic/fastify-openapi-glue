@@ -7,7 +7,7 @@
 	"types": "index.d.ts",
 	"scripts": {
 		"start": "fastify start --options examples/petstore/index.js",
-		"test": "borp -p 'test/test*.js' --coverage",
+		"test": "borp --coverage",
 		"lint": "eslint",
 		"dev": "fastify start -l info -P examples/petstore/index.js",
 		"updateChecksums": "node test/update-checksums.js",
