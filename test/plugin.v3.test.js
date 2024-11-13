@@ -1,11 +1,12 @@
 import { strict as assert } from 'node:assert/strict'
 import { createRequire } from 'node:module'
 import { test } from 'node:test'
+import { fileURLToPath } from 'node:url'
 import Fastify from 'fastify'
 import fastifyOpenapiGlue from '../index.js'
 
 const importJSON = createRequire(import.meta.url)
-const localFile = (fileName) => new URL(fileName, import.meta.url).pathname
+const localFile = (fileName) => fileURLToPath(new URL(fileName, import.meta.url))
 
 const testSpec = await importJSON('./test-openapi.v3.json')
 const petStoreSpec = await importJSON('./petstore-openapi.v3.json')
