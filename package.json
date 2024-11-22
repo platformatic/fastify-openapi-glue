@@ -22,7 +22,7 @@
 		"js-yaml": "^4.1.0"
 	},
 	"devDependencies": {
-		"borp": "^0.18.0",
+		"borp": "^0.19.0",
 		"c8": "^10.1.2",
 		"eslint": "^9.14.0",
 		"fastify": "^5.1.0",
