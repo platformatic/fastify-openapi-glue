@@ -524,3 +524,18 @@ test('create an empty body with addEmptySchema option', async (t) => {
   })
   assert.ok(emptyBodySchemaFound)
 })
+
+test('security is set on routes', async (t) => {
+  t.plan(2)
+  const fastify = Fastify()
+  fastify.addHook('onRoute', (routeOptions) => {
+    if (routeOptions.url === '/operationSecurity') {
+      t.assert.deepStrictEqual(routeOptions.schema.security, [
+        { api_key: [] },
+        { skipped: [] },
+        { failing: [] },
+      ])
+    }
+  })
+  await fastify.register(fastifyOpenapiGlue, opts)
+})

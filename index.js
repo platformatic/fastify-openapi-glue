@@ -107,7 +107,10 @@ function makeGenerateRoutes (config, resolver, security) {
       routesInstance.route({
         method: item.method,
         url: item.url,
-        schema: item.schema,
+        schema: {
+          security: item.security,
+          ...item.schema
+        },
         config: item.config,
         preHandler: securityHandler(security, item),
         ...serviceHandlerOptions(resolver, item),
