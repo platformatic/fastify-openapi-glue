@@ -1,6 +1,6 @@
 {
 	"name": "@platformatic/fastify-openapi-glue",
-	"version": "5.0.0",
+	"version": "5.1.0",
 	"description": "generate a fastify configuration from an openapi specification",
 	"main": "index.js",
 	"type": "module",
