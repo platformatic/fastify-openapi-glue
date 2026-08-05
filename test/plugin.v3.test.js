@@ -25,6 +25,35 @@ const noStrict = {
   },
 }
 
+const emptyBodySpec = {
+  openapi: '3.0.0',
+  info: { title: 'empty body schema', version: '1.0.0' },
+  paths: {
+    '/emptyBodySchema': {
+      get: {
+        operationId: 'emptyBodySchema',
+        summary: 'Empty body schema',
+        responses: {
+          204: { description: 'Empty' },
+          302: { description: 'Empty' },
+        },
+      },
+    },
+    '/undescribedBody': {
+      get: {
+        operationId: 'undescribedBody',
+        summary: 'A body without a schema',
+        responses: {
+          200: {
+            description: 'A file',
+            content: { 'application/octet-stream': {} },
+          },
+        },
+      },
+    },
+  },
+}
+
 const opts = {
   specification: testSpec,
   serviceHandlers,
@@ -511,8 +540,14 @@ test('create an empty body with addEmptySchema option', async (t) => {
   let emptyBodySchemaFound = false
   fastify.addHook('onRoute', (routeOptions) => {
     if (routeOptions.url === '/emptyBodySchema') {
-      assert.deepStrictEqual(routeOptions.schema.response?.['204'], {})
-      assert.deepStrictEqual(routeOptions.schema.response?.['302'], {})
+      assert.deepStrictEqual(routeOptions.schema.response?.['204'], {
+        type: 'null',
+        description: 'Empty',
+      })
+      assert.deepStrictEqual(routeOptions.schema.response?.['302'], {
+        type: 'null',
+        description: 'Empty',
+      })
       emptyBodySchemaFound = true
     }
   })
@@ -523,6 +558,50 @@ test('create an empty body with addEmptySchema option', async (t) => {
     addEmptySchema: true,
   })
   assert.ok(emptyBodySchemaFound)
+})
+
+test('a response whose content declares no schema keeps its body', async (t) => {
+  const fastify = Fastify()
+
+  let routeFound = false
+  fastify.addHook('onRoute', (routeOptions) => {
+    if (routeOptions.url === '/undescribedBody') {
+      assert.deepStrictEqual(routeOptions.schema.response?.['200'], {})
+      routeFound = true
+    }
+  })
+
+  await fastify.register(fastifyOpenapiGlue, {
+    specification: emptyBodySpec,
+    operationResolver: () => ({ handler: async () => ({ hello: 'world' }) }),
+    addEmptySchema: true,
+  })
+  assert.ok(routeFound)
+
+  const res = await fastify.inject({
+    method: 'GET',
+    url: '/undescribedBody',
+  })
+  assert.equal(res.statusCode, 200)
+  assert.deepStrictEqual(JSON.parse(res.body), { hello: 'world' })
+})
+
+test('a body-less response is sent without a body', async (t) => {
+  const fastify = Fastify()
+  await fastify.register(fastifyOpenapiGlue, {
+    specification: emptyBodySpec,
+    operationResolver: () => ({
+      handler: async (req, reply) => reply.code(204).send(),
+    }),
+    addEmptySchema: true,
+  })
+
+  const res = await fastify.inject({
+    method: 'GET',
+    url: '/emptyBodySchema',
+  })
+  assert.equal(res.statusCode, 204)
+  assert.equal(res.body, '')
 })
 
 test('security is set on routes', async (t) => {
