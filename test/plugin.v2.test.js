@@ -314,8 +314,14 @@ test('create an empty body with addEmptySchema option', async (t) => {
   let emptyBodySchemaFound = false
   fastify.addHook('onRoute', (routeOptions) => {
     if (routeOptions.url === '/v2/emptyBodySchema') {
-      assert.deepStrictEqual(routeOptions.schema.response?.['204'], {})
-      assert.deepStrictEqual(routeOptions.schema.response?.['302'], {})
+      assert.deepStrictEqual(routeOptions.schema.response?.['204'], {
+        type: 'null',
+        description: 'Empty',
+      })
+      assert.deepStrictEqual(routeOptions.schema.response?.['302'], {
+        type: 'null',
+        description: 'Empty',
+      })
       emptyBodySchemaFound = true
     }
   })
@@ -324,6 +330,24 @@ test('create an empty body with addEmptySchema option', async (t) => {
     specification: testSpec,
     serviceHandlers: new Set(),
     addEmptySchema: true,
+  })
+  assert.ok(emptyBodySchemaFound)
+})
+
+test('responses without a schema are dropped without the addEmptySchema option', async (t) => {
+  const fastify = Fastify()
+
+  let emptyBodySchemaFound = false
+  fastify.addHook('onRoute', (routeOptions) => {
+    if (routeOptions.url === '/v2/emptyBodySchema') {
+      assert.equal(routeOptions.schema.response, undefined)
+      emptyBodySchemaFound = true
+    }
+  })
+
+  await fastify.register(fastifyOpenapiGlue, {
+    specification: testSpec,
+    serviceHandlers: new Set(),
   })
   assert.ok(emptyBodySchemaFound)
 })

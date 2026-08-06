@@ -21,6 +21,11 @@ export interface FastifyOpenapiGlueOptions {
 	securityHandlers?: object;
 	operationResolver?: OperationResolver;
 	prefix?: string;
+	/**
+	 * Keep the status codes of responses which declare no body (204, 304, ...) by
+	 * registering them with a `{ type: "null" }` response schema. Default is `false`,
+	 * which drops those status codes from the route schema.
+	 */
 	addEmptySchema?: boolean;
 	/**
 	 * NOTE:
