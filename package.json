@@ -18,7 +18,7 @@
 	"author": "Platformatic Inc. <oss@platformatic.dev> (https://platformatic.dev)",
 	"dependencies": {
 		"@platformatic/openapi-schema-validator": "^3.0.0",
-		"fastify-plugin": "^5.0.1",
+		"fastify-plugin": "^6.0.0",
 		"js-yaml": "^4.1.0"
 	},
 	"devDependencies": {
