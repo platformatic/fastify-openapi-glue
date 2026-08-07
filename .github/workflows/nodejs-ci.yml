@@ -25,4 +25,4 @@ jobs:
       - run: npm run test
       # test typescript definitions
       - run: npm install @types/node
-      - run: npx --package typescript tsc index.d.ts
+      - run: npx --package typescript tsc -p tsconfig.json
